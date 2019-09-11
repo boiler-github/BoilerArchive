@@ -1,0 +1,40 @@
+<ons-page ng-controller="accountController as account">
+  <ons-toolbar>
+    <div class="center">アカウント登録</div>
+  </ons-toolbar>
+
+  <ons-list>
+    <ons-list-header>氏名</ons-list-header>
+    <ons-list-item>
+      <ons-input type="text" modifier="underbar" ng-model="account.player" readonly></ons-input>
+      <ons-icon icon="times-circle" style="color: #F40" ng-click="account.player = undefined"></ons-icon>
+    </ons-list-item>
+    <ons-button modifier="quiet" ng-repeat="head in account.kana" style="width:16%" ng-click="account.show = head">{{head}}</ons-button>
+    <div ng-repeat="head in account.kana" ng-show="account.show == head">
+      <ons-list-item tappable ng-repeat="member in account.player_list[head]" ng-click="account.show = ''">
+        <label class="left">
+          <ons-input type="radio" input-id="acmember-{{member.index}}" ng-model="account.player" value="{{member.name}}"></ons-input>
+        </label>
+        <label for="acmember-{{member.index}}" class="center">
+          {{member.name}}
+        </label>
+      </ons-list-item>
+    </div>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>メールアドレス</ons-list-header>
+    <ons-list-item>
+      <ons-input type="text" modifier="underbar" ng-model="account.address"></ons-input>
+    </ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>管理者権限</ons-list-header>
+    <ons-list-item>
+      <ons-switch ng-model="account.admin" ng-click="account.identify()"></ons-switch>
+    </ons-list-item>
+  </ons-list>
+  <div class="next-row in-center">
+    <ons-button ng-click="account.save()">変更を保存</ons-button>
+  </div>
+  <div class="blank-s"></div>
+</ons-page>

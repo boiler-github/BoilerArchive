@@ -1,0 +1,130 @@
+<ons-sliding-menu var="crecordMenu" main-page="crecord_index.html" menu-page="crecord_menu.html"
+  max-slide-distance="200px" side="left" swipeable="true"
+  ng-controller="crecordController as crecord">
+</ons-sliding-menu>
+
+<ons-template id="crecord_menu.html">
+  <ons-page>
+    <ons-list>
+      <ons-list-item tappable modifier="chevron"
+        ng-click="crecordMenu.setMainPage('crecord_index.html', {closeMenu: true})">
+        大会ページトップ
+      </ons-list-item>
+    </ons-list>
+    <ons-list ng-repeat="(name, data) in crecord.classes">
+      <ons-list-header>{{name}}</ons-list-header>
+      <ons-list-item tappable modifier="chevron"
+        ng-repeat="player in data.players"
+        ng-if="player.round > 0 && crecord.showRemain(player.round, data.total) != '優勝'"
+        ng-click="crecord.setPlayer(player, name)">
+        {{player.name}}
+      </ons-list-item>
+    </ons-list>    
+  </ons-page>
+</ons-template>
+
+<ons-template id="crecord_index.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="center">{{crecord.name}}</div>
+      <div class="right">
+        <ons-toolbar-button ng-click="crecordMenu.toggleMenu()">
+          <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+    </ons-toolbar>
+    <div class="content">
+    <p>現在勝ち残り中</p>
+    <ons-list ng-repeat="(name, data) in crecord.classes">
+      <ons-list-header>{{name}}</ons-list-header>
+      <ons-list-item ng-repeat="player in data.players" ng-if="player.round > 0">
+        {{player.name}} ({{player.round}}回戦 {{crecord.showRemain(player.round, data.total)}})
+      </ons-list-item>
+    </ons-list>
+    <p>敗退</p>
+    <ons-list ng-repeat="(name, data) in crecord.classes">
+      <ons-list-header>{{name}}</ons-list-header>
+      <ons-list-item ng-repeat="player in data.players" ng-if="player.round < 0">
+        {{player.name}} ({{-player.round}}回戦負け)
+      </ons-list-item>
+    </ons-list>
+    <div class="next-row in-center">
+      <ons-button ng-click="crecord.confirmProceed()">入力を終了する</ons-button>
+    </div>
+    <div class="blank"></div>
+  </ons-page>
+</ons-template>
+
+<ons-template id="crecord_update.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="center">結果入力（{{crecord.player.name}}）</div>
+      <div class="right">
+        <ons-toolbar-button ng-click="crecordMenu.toggleMenu()">
+          <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+    </ons-toolbar>
+    <div class="content">
+    <p>第{{crecord.player.round}}回戦</p>
+    <ons-list>
+      <ons-list-header>対戦結果</ons-list-header>
+      <ons-list-item>
+        <ons-row>
+          <ons-col width="5%" class="in-right">
+            {{crecord.record.result ? "○" : "×"}}
+          </ons-col>
+          <ons-col style="padding-left: 10px">
+            <ons-input type="number" class="num-input" modifier="underbar" min="1" max="50" ng-model="crecord.record.diff"></ons-input>
+          </ons-col>
+          <ons-col class="in-right" style="padding-right: 20px">
+            <ons-switch ng-model="crecord.record.result"></ons-switch>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>対戦者名</ons-list-header>
+      <ons-list-item>
+        <ons-input type="text" modifier="underbar" ng-model="crecord.record.name"></ons-input>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>所属</ons-list-header>
+      <ons-list-item>{{crecord.record.belong}}</ons-list-item>
+      <ons-button modifier="quiet" ng-repeat="head in crecord.kana" style="width:16%" ng-click="crecord.gshow = head">{{head}}</ons-button>
+      <div ng-repeat="head in crecord.kana" ng-show="crecord.gshow == head">
+        <ons-list-item ng-repeat="group in crecord.group_index[head]" ng-click="crecord.gshow = ''">
+          <label class="left">
+            <ons-input type="radio" input-id="crgroup-{{$index}}" value="{{group.name}}" ng-model="crecord.record.belong"></ons-input>
+          </label>
+          <label for="crgroup-{{$index}}" class="center">
+            {{group.name}}
+          </label>
+        </ons-list-item>
+      </div>
+    </ons-list>
+    <div class="in-center next-row">
+      <ons-button ng-click="crecord.saveData()">結果を送信する</ons-button>
+    </div>
+    </div>
+  </ons-page>
+</ons-template>
+
+<ons-template id="crecord_result.html">
+  <ons-page>
+    <ons-toolbar>
+      <div class="center">結果出力（{{crecord.name}}）</div>
+    </ons-toolbar>
+    <div class="content">
+      <p>下記内容を、{{crecord.address}}宛てに送信しました。</p>
+      <div style="height: 20px"></div>
+      <p ng-repeat="para in crecord.resultPara track by $index">
+        {{para}}
+      </p>
+      <div class="next-row in-center">
+        <ons-button ng-click="main.resetPage()">戻る</ons-button>
+      </div>
+    </div>
+  </ons-page>
+</ons-template>

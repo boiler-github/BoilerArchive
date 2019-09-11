@@ -1,0 +1,202 @@
+<ons-sliding-menu var="resultMenu" main-page="result_player.html" menu-page="result_menu.html"
+  max-slide-distance="200px" side="left" swipeable="true"
+  ng-controller="resultController as result">
+</ons-sliding-menu>
+
+<ons-template id="result_menu.html">
+<ons-page>
+  <ons-list>
+    <ons-list-item tappable modifier="chevron" ng-click="resultMenu.setMainPage('result_index.html', {closeMenu: true})">
+      メインページ
+    </ons-list-item>
+    <ons-list-item tappable modifier="chevron" ng-click="resultMenu.setMainPage('result_player.html', {closeMenu: true})">
+      対象選択
+    </ons-list-item>
+<!--    <ons-list-item tappable modifier="chevron" ng-click="resultMenu.setMainPage('result_setting.html', {closeMenu: true})">
+      検索条件設定
+    </ons-list-item>-->
+  </ons-list>
+</ons-page>
+</ons-template>
+
+<ons-template id="result_index.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">個人戦績</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="resultMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div class="content">
+  <div ng-show="!result.isLoading">
+    <ons-row class="padding-lr">
+      <ons-col width="60%" class="in-left">
+        <span style="font-size: 30px">{{result.player.name}}</span>
+        <br/>
+        <span style"font-size: 18px">{{result.showClass(result.player.class)}}, {{result.showGrade(result.player.grade)}}</span>
+      </ons-col>
+      <ons-col width="40%" class="in-right">
+        <span style="font-size: 30px; margin-top: 20px; color: {{result.ratingColor(result.player.rating)}}">{{result.player.rating}}</span>
+        <br/>
+        <span style="font-size: 24px">{{result.combo}}連勝中</span>
+      </ons-col>
+    </ons-row>
+    <ons-row class="next-row">
+      <ons-col width="65%">
+        <ons-list style="padding-bottom: 120px">
+      		<ons-list-header class="result-title">試合一覧</ons-list-header>
+          <div ng-repeat="record in result.records" class="next-row-s">
+          <ons-list-header class="result-title-s">{{record.date}}</ons-list-header>
+          <div ng-repeat="game in record.games">
+          <div class="ballon-box">
+            <div class="balloon-top" ng-show="game.showOpponent">
+              <div ng-if="game.opponent.isMember">
+                {{result.showClass(game.opponent.class)}}, {{result.showGrade(game.opponent.grade)}}
+              </div>
+              <div ng-if="!game.opponent.isMember">
+                {{result.showClass(game.opponent.class)}}, {{game.opponent.belong}}
+              </div>
+            </div>
+          </div>
+      		<ons-list-item>
+        		<ons-row ng-if="game.type == '一人取り'">
+	      			<ons-col width="25%"></ons-col>
+              <ons-col width="60%">
+                一人取り
+              </ons-col>
+              <ons-col width="10%"></ons-col>
+              <ons-col width="5%">
+                <ons-icon icon="tag" ng-if="game.comment" ng-click="result.toggleDetail(game)"></ons-icon>
+              </ons-col>
+	      		</ons-row>
+      			<ons-row ng-if="game.type != '一人取り'">
+	      			<ons-col width="10%">
+                {{game.result ? "○" : "×"}}
+          		</ons-col>
+              <ons-col width="15%">
+                {{game.diff}}
+              </ons-col>
+              <ons-col width="60%" ng-click="result.toggleOpponent(game)">
+                {{game.opponent.name}}
+              </ons-col>
+              <ons-col width="10%">
+                {{game.star}}
+              </ons-col>
+              <ons-col width="5%">
+                <ons-icon icon="tag" ng-if="game.comment" ng-click="result.toggleDetail(game)"></ons-icon>
+              </ons-col>
+	      		</ons-row>
+      		</ons-list-item>
+          <div class="ballon-box">
+            <div class="balloon-bottom" ng-show="game.showDetail">
+              {{game.round}}試合目 <span ng-if="game.type != '一人取り'">{{game.type}}</span></br>
+              {{game.songer}}<br/>
+  	      		{{game.comment}}
+            </div>
+          </div>
+          </div>
+          </div>
+      	</ons-list>
+      </ons-col>
+      <ons-col width="5%"></ons-col>
+      <ons-col width="30%">
+        <ons-list>
+        	<ons-list-header class="result-title">集計</ons-list-header>
+          <div ng-repeat="summary in result.summaries">
+          <ons-list-header class="result-title-s">{{summary.type}}</ons-list-header>
+      		<ons-list-item ng-repeat="row in summary.values">
+      			<ons-row>
+              <ons-col class="in-left">{{row.title}}</ons-col>
+      			</ons-row>
+            <ons-row style="margin-top: 20px">
+              <ons-col class="in-right">{{row.value}}</ons-col>
+      			</ons-row>
+      		</ons-list-item>
+          </div>
+      	</ons-list>
+      </ons-col>
+    </ons-row>
+    <ons-row class="next-row">
+      <ons-list style="width: 100%">
+        <ons-list-header class="result-title">対戦相手別</ons-list-header>
+        <ons-list-item>
+          <ons-row>
+            <ons-col width="40%"></ons-col>
+            <ons-col class="in-right">試合<br/>数</ons-col>
+            <ons-col class="in-right">通算<br/>勝率</ons-col>
+            <ons-col class="in-right">10戦<br/>勝率</ons-col>
+          </ons-row>
+        </ons-list-item>
+        <ons-list-item ng-repeat="(name, values) in result.results">
+          <ons-row>
+            <ons-col class="in-left" width="40%">
+              {{name}}
+            </ons-col>
+            <ons-col class="in-right">
+              {{values[0]}}
+      			</ons-col>
+            <ons-col class="in-right">
+              {{(values[1] / values[0]).toFixed(2)}}
+      			</ons-col>
+            <ons-col class="in-right">
+              {{result.calcWinrate(values[2])}}
+      			</ons-col>
+          </ons-row>
+    		</ons-list-item>
+      </ons-list>
+    </ons-row>
+  </div>
+  <div ng-show="result.isLoading">
+    <ng-include src="'loading.html'"></ng-include>
+  </div>
+  </div>
+</ons-page>
+</ons-template>
+
+<ons-template id="result_player.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">対象選択</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="resultMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div class="content">
+  <ons-button modifier="quiet" ng-repeat="head in result.kana" style="width:16%" ng-click="result.show = head">{{head}}</ons-button>
+  <div class="blank-s"></div>
+  <div ng-repeat="head in result.kana" ng-show="result.show == head">
+    <ons-list-item ng-repeat="member in result.player_list[head]" ng-if="member.isMember">
+      <label class="left">
+        <ons-input type="radio" input-id="rmember-{{member.index}}" value="{{member.name}}" ng-model="result.player_name"
+          ng-change="result.search()"></ons-input>
+      </label>
+      <label for="rmember-{{member.index}}" class="center">
+        {{member.name}}
+      </label>
+    </ons-list-item>
+  </div>
+  </div>
+</ons-page>
+</ons-template>
+
+<!--
+<ons-template id="result_setting.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">検索条件設定</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="resultMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <ons-gesture-detector
+    ng-swipeleft="resultMenu.setMainPage('result_index.html')">
+  </ons-gesture-detector>
+</ons-page>
+</ons-template>
+-->

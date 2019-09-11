@@ -1,0 +1,27 @@
+<ons-navigator var="settingsNavigator" page="settings_index.html" animation="slide"></ons-navigator>
+<ons-template id="settings_index.html">
+  <ons-page ons-show="main.title = '記録管理'">
+    <p style="margin-left:10px">記録の管理や情報の登録を行います。</p>
+    <ons-list>
+      <ons-list-header>情報登録</ons-list-header>
+      <ons-list-item tappable modifier="chevron" ng-click="settingsNavigator.pushPage('members_index.html')">部員登録</ons-list-item>
+      <ons-list-item tappable modifier="chevron" ng-click="settingsNavigator.pushPage('guests_index.html')">ゲスト登録</ons-list-item>
+      <ons-list-item tappable modifier="chevron" ng-click="settingsNavigator.pushPage('songers_index.html')">読手登録</ons-list-item>
+      <ons-list-item tappable modifier="chevron" ng-click="settingsNavigator.pushPage('groups_index.html')">かるた会登録</ons-list-item>
+      <ons-list-item tappable modifier="chevron" ng-click="settingsNavigator.pushPage('gametypes_index.html')">試合形式登録</ons-list-item>
+      <!-- <div ng-show="main.admin">
+      <ons-list-header>記録管理</ons-list-header>
+      <ons-list-item tappable modifier="chevron" ng-click="settingsNavigator.pushPage('semester_index.html')">学期末処理</ons-list-item>
+      <ons-list-item tappable modifier="chevron" ng-click="settingsNavigator.pushPage('summary_index.html')">学期集計</ons-list-item>
+      </div> -->
+    </ons-list>
+  </ons-page>
+</ons-template>
+
+<ng-include src="'html/settings/songers.html'"></ng-include>
+<ng-include src="'html/settings/gametypes.html'"></ng-include>
+<ng-include src="'html/settings/groups.html'"></ng-include>
+<ng-include src="'html/settings/members.html'"></ng-include>
+<ng-include src="'html/settings/guests.html'"></ng-include>
+<ng-include src="'html/settings/semester.html'"></ng-include>
+<ng-include src="'html/settings/summary.html'"></ng-include>

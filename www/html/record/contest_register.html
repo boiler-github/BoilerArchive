@@ -1,0 +1,119 @@
+<ons-template id="cregister_index.html">
+  <ons-page ng-controller="cregisterController as cregister">
+    <ons-toolbar>
+      <div class="left">
+        <ons-back-button>戻る</ons-back-button>
+      </div>
+      <div class="center">大会登録</div>
+      <div class="right" style="padding-top: 3px">
+        <ons-toolbar-button ng-click="cregister.proceed()">
+          <ons-icon icon="angle-double-right" size="150%"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+    </ons-toolbar>
+    <ons-gesture-detector
+      ng-swiperight="editNavigator.popPage()"
+      ng-swipeleft="cregister.proceed()">
+    <div class="content">
+    <ons-list>
+      <ons-list-header>大会名称</ons-list-header>
+      <ons-list-item>
+        <ons-input type="text" class="input-m" modifier="underbar" ng-model="cregister.name"></ons-input>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>日付</ons-list-header>
+      <ons-list-item>
+        <ons-input type="date" modifier="underbar" ng-model="cregister.date"></ons-input>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>クラス一覧</ons-list-header>
+      <ons-list-item ng-repeat="cl in cregister.classes">
+        <ons-row>
+          <ons-col>クラス名</ons-col>
+          <ons-col>
+            <ons-input type="text" class="num-input" modifier="underbar" ng-model="cl.name"></ons-input>
+          </ons-col>
+          <ons-col>参加人数</ons-col>
+          <ons-col>
+            <ons-input type="number" class="num-input" modifier="underbar" ng-model="cl.total"></ons-input>
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+      <ons-list-item tappable ng-click="cregister.addClass()">
+        ＋クラスを追加...
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>参加者一覧</ons-list-header>
+      <ons-button modifier="quiet" ng-repeat="head in cregister.kana" style="width:16%" ng-click="cregister.show = head">{{head}}</ons-button>
+      <div ng-repeat="head in cregister.kana" ng-show="cregister.show == head">
+        <ons-list-item ng-repeat="member in cregister.player_list[head]">
+          <label class="left">
+            <ons-input type="checkbox" input-id="cregmember-{{member.index}}" ng-click="cregister.toggleCheck(member.name)"></ons-input>
+          </label>
+          <label for="cregmember-{{member.index}}" class="center">
+            {{member.name}}
+          </label>
+        </ons-list-item>
+      </div>
+    </ons-list>
+    </div>
+    </ons-gesture-detector>
+  </ons-page>
+</ons-template>
+
+<ons-template id="cregister_players.html">
+  <ons-page ng-controller="cplayersController as cplayers">
+    <ons-toolbar>
+      <div class="left">
+        <ons-back-button>戻る</ons-back-button>
+      </div>
+      <div class="center">クラス登録</div>
+      <div class="right" style="padding-top: 3px">
+        <ons-toolbar-button ng-click="cplayers.proceed()">
+          <ons-icon icon="angle-double-right" size="150%"></ons-icon>
+        </ons-toolbar-button>
+      </div>
+    </ons-toolbar>
+    <ons-gesture-detector
+      ng-swiperight="editNavigator.popPage()"
+      ng-swipeleft="cplayers.proceed()">  
+    <div class="content">
+    <ons-list ng-repeat="player in cplayers.players">
+      <ons-list-header>{{player.name}}</ons-list-header>
+      <ons-list-item>
+        <div class="radio" ng-repeat="class in cplayers.classes">
+          <ons-input type="radio" ng-model="player.class" value="{{class.name}}" ></ons-input>
+          <label class="radio-label">{{class.name}}</label>
+        </div>
+      </ons-list-item>
+    </ons-list>
+    </div>
+    </ons-gesture-detector>
+  </ons-page>
+</ons-template>
+
+<ons-template id="cregister_submit.html">
+  <ons-page ng-controller="csubmitController as csubmit">
+    <ons-toolbar>
+      <div class="center">送信完了</div>
+    </ons-toolbar>
+    <div class="content">
+    <p>大会情報を登録しました。</p>
+    <div class="next-row"></div>
+    <h3>{{csubmit.data.name}} ({{csubmit.data.date}})</h3>
+    <ons-list ng-repeat="(cl, data) in csubmit.classes">
+      <ons-list-header>{{cl}}級 ({{data.players.length}}名 / {{data.total}}名)</ons-list-header>
+      <ons-list-item ng-repeat="player in data.players">
+        {{player.name}}
+      </ons-list-item>
+    </ons-list>
+    <div class="next-row in-center">
+      <ons-button ng-click="main.resetPage()">戻る</ons-button>
+    </div>
+    </div>
+  </ons-page>
+</ons-template>
+  

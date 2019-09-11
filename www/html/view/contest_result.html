@@ -1,0 +1,127 @@
+<ons-sliding-menu var="cresultMenu" main-page="cresult_player.html" menu-page="cresult_menu.html"
+  max-slide-distance="200px" side="left" swipeable="true"
+  ng-controller="cresultController as cresult">
+</ons-sliding-menu>
+
+<ons-template id="cresult_menu.html">
+<ons-page>
+  <ons-list>
+    <ons-list-item tappable modifier="chevron" ng-click="cresultMenu.setMainPage('cresult_index.html', {closeMenu: true})">
+      メインページ
+    </ons-list-item>
+    <ons-list-item tappable modifier="chevron" ng-click="cresultMenu.setMainPage('cresult_player.html', {closeMenu: true})">
+      対象選択
+    </ons-list-item>
+<!--    <ons-list-item tappable modifier="chevron" ng-click="cresultMenu.setMainPage('cresult_setting.html', {closeMenu: true})">
+      検索条件設定
+    </ons-list-item>-->
+  </ons-list>
+</ons-page>
+</ons-template>
+
+<ons-template id="cresult_index.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">参加記録</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="cresultMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div ng-show="!cresult.isLoading" class="content">
+    <ons-row class="padding-lr">
+      <ons-col width="60%" class="in-left">
+        <span style="font-size: 30px">{{cresult.player.name}}</span>
+        <br/>
+        <span style"font-size: 18px">{{cresult.showClass(cresult.player.class)}}, {{cresult.showGrade(cresult.player.grade)}}</span>
+      </ons-col>
+    </ons-row>
+    <ons-row class="next-row">
+      <ons-col width="65%">
+        <ons-list ng-repeat="(name, games) in cresult.contests">
+          <ons-list-header ng-click="viewNavigator.pushPage('html/view/contest_search.html', {data: {name: name}})">{{name}}({{games[0]}}級)</ons-list-header>
+          <ons-list-item ng-repeat="game in games" ng-if="game.round">
+            <ons-row>
+              <ons-col ng-repeat="data in cresult.arrange(game)" width="{{cresult.widths[$index]}}">
+                {{data}}
+              </ons-col>
+            </ons-row>
+          </ons-list-item>
+        </ons-list>
+      </ons-col>
+      <ons-col width="5%"></ons-col>
+      <ons-col width="30%">
+        <ons-list>
+          <ons-list-header>昇段日</ons-list-header>
+          <ons-list-item>{{cresult.player.upgradeDate}}</ons-list-item>
+        </ons-list>
+        <ons-list>
+          <ons-list-header>参加大会数</ons-list-header>
+          <ons-list-item ng-repeat="data in cresult.count">
+            <ons-row>
+              <ons-col class="in-left">{{data[0]}}</ons-col>
+              <ons-col class="in-right">{{data[1]}}</ons-col>
+            </ons-row>
+          </ons-list-item>
+        </ons-list>
+        <ons-list>
+          <ons-list-header>結果集計(昇級後)</ons-list-header>
+          <ons-list-item ng-repeat="total in cresult.totals track by $index" ng-if="total > 0">
+            <ons-row>
+              <ons-col class="in-left">{{$index + 1}}回戦</ons-col>
+              <ons-col class="in-right">{{total}}</ons-col>
+            </ons-row>
+          </ons-list-item>
+        </ons-list>
+      </ons-col>
+    </ons-row>
+  </div>
+  <div ng-show="cresult.isLoading">
+    <ng-include src="'loading.html'"></ng-include>
+  </div>
+</ons-page>
+</ons-template>
+
+<ons-template id="cresult_player.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">対象選択</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="cresultMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div class="blank-s"></div>
+  <ons-button modifier="quiet" ng-repeat="head in cresult.kana" style="width:16%" ng-click="cresult.show = head">{{head}}</ons-button>
+  <div class="blank-s"></div>
+  <div ng-repeat="head in cresult.kana" ng-show="cresult.show == head">
+    <ons-list-item ng-repeat="member in cresult.player_list[head]" ng-if="member.isMember">
+      <label class="left">
+        <ons-input type="radio" input-id="rmember-{{member.index}}" value="{{member.name}}" ng-model="cresult.player_name"
+          ng-change="cresult.search()"></ons-input>
+      </label>
+      <label for="rmember-{{member.index}}" class="center">
+        {{member.name}}
+      </label>
+    </ons-list-item>
+  </div>
+</ons-page>
+</ons-template>
+
+<ons-template id="cresult_setting.html">
+<ons-page>
+  <ons-gesture-detector
+    ng-swipeleft="cresultMenu.setMainPage('cresult_index.html')">
+  <ons-toolbar>
+    <div class="center">検索条件設定</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="cresultMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  </ons-gesture-detector>
+</ons-page>
+</ons-template>

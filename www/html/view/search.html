@@ -1,0 +1,334 @@
+<ons-sliding-menu var="searchMenu" main-page="search_settings.html" menu-page="search_menu.html"
+  max-slide-distance="200px" side="left" swipeable="true"
+  ng-controller="searchController as search">
+</ons-sliding-menu>
+
+<ons-template id="search_menu.html">
+<ons-page>
+  <ons-list>
+    <ons-list-item tappable modifier="chevron" ng-click="searchMenu.setMainPage('search_result.html', {closeMenu: true})">
+      検索結果
+    </ons-list-item>
+    <ons-list-item tappable modifier="chevron" ng-click="searchMenu.setMainPage('search_settings.html', {closeMenu: true})">
+      条件設定
+    </ons-list-item>
+  </ons-list>
+</ons-page>
+</ons-template>
+
+<ons-template id="search_result.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">検索結果</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="searchMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div class="content">
+  <div ng-show="!search.isLoading">
+    <p>{{search.count}}件の記録が見つかりました。<span ng-show="search.count > 100">（うち100件を表示）</span></p>
+    <ons-list ng-show="search.updated.length > 0">
+      <ons-list-header>修正済み</ons-list-header>
+      <ons-list-item tappable ng-repeat="game in search.updated"
+        ng-click="search.pageDetail(game)" ng-show="!game.updated">
+        <ons-row>
+          <ons-col ng-repeat="data in search.arrange(game) track by $index" width="{{search.widths[$index]}}">
+            {{data}}
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+    </ons-list>
+    <ons-list ng-repeat="record in search.records">
+      <ons-list-header>{{record.date}}</ons-list-header>
+      <ons-list-item tappable ng-repeat="game in record.games"
+        ng-click="search.pageDetail(game)" ng-show="!game.updated">
+        <ons-row>
+          <ons-col ng-repeat="data in search.arrange(game) track by $index" width="{{search.widths[$index]}}">
+            {{data}}
+          </ons-col>
+        </ons-row>
+      </ons-list-item>
+    </ons-list>
+  </div>
+  <div ng-show="search.isLoading">
+    <ng-include src="'loading.html'"></ng-include>
+  </div>
+  </div>
+</ons-page>
+</ons-template>
+
+<ons-template id="search_detail.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">試合詳細</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="searchMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div class="content">
+  <div ng-show="!search.isLoading">
+  <ons-button modifier="quiet" ng-click="searchMenu.setMainPage('search_result.html')">一覧に戻る</ons-button>
+  <div ng-if="!search.forEdit">
+  <div class="blank-s"></div>
+  <ons-list>
+    <ons-list-header>日付</ons-list-header>
+    <ons-list-item>{{search.game.date}}</ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>試合数</ons-list-header>
+    <ons-list-item>{{search.game.round}}試合目</ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>対戦</ons-list-header>
+    <ons-list-item>{{search.showResult(search.game)}}</ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>試合形式</ons-list-header>
+    <ons-list-item>{{search.game.type}}</ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>コメント</ons-list-header>
+    <ons-list-item>{{search.game.comment}}</ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>読手</ons-list-header>
+    <ons-list-item>{{search.game.songer}}</ons-list-item>
+  </ons-list>
+  <div class="blank-s"></div>
+  <ons-row ng-show="main.admin">
+    <ons-col class="in-center">
+      <ons-button ng-click="search.forEdit = true">編集する</ons-button>
+    </ons-col>
+    <ons-col class="in-center">
+      <ons-button ng-click="search.deleteRecord()" style="background-color: #F40">削除する</ons-button>
+    </ons-col>
+  </ons-row>
+  </div>
+  <div ng-if="search.forEdit">
+  <ons-list>
+    <ons-list-header>日付</ons-list-header>
+    <ons-list-item>
+      <ons-input type="date" modifier="underbar" ng-model="search.new_date"></ons-input>
+    </ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>試合数</ons-list-header>
+    <ons-list-item>
+      <ons-input type="number" modifier="underbar" class="num-input" min="0" ng-model="search.new_round"></ons-input>
+      試合目
+    </ons-list-item>
+  </ons-list>
+  <ons-list ng-if="search.new_type != '一人取り'">
+    <ons-list-header>対戦</ons-list-header>
+    <ons-list-item>
+      {{search.game.order ? search.game.winner : search.game.loser}}
+      {{search.new_result ? "×" : "○"}}
+      <div style="width:5px"></div>
+      <ons-input type="number" modifier="underbar" class="num-input" min="1" ng-model="search.new_diff"></ons-input>
+      <div style="width:5px"></div>
+      {{search.new_result ? "○" : "×"}}
+      {{search.game.order ? search.game.loser : search.game.winner}}
+    </ons-list-item>
+    <ons-list-item>
+      <ons-switch ng-model="search.new_result"></ons-switch>
+    </ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>試合形式</ons-list-header>
+    <ons-list-item tappable ng-click="search.showChange('typedetail')">{{search.new_type}}</ons-list-item>
+    <div ng-show="search.show['typedetail']">
+    <ons-list-item ng-repeat="type in search.type_list">
+      <label class="left">
+        <ons-input type="radio" input-id="sdtype-{{$index}}" ng-model="search.new_type" value="{{type.name}}"></ons-input>
+      </label>
+      <label for="sdtype-{{$index}}" class="center">
+        {{type.name}}
+      </label>
+    </ons-list-item>
+    </div>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>読手</ons-list-header>
+    <ons-list-item ng-click="search.showChange('songerdetail')">{{search.new_songer}}</ons-list-item>
+    <div ng-show="search.show['songerdetail']">
+    <ons-list-item ng-repeat="songer in search.songer_list">
+      <label class="left">
+        <ons-input type="radio" input-id="sdsonger-{{$index}}" ng-model="search.new_songer" value="{{songer.name}}"></ons-input>
+      </label>
+      <label for="sdsonger-{{$index}}" class="center">
+        {{songer.name}}
+      </label>
+    </ons-list-item>
+    </div>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>コメント</ons-list-header>
+    <ons-list-item>
+      <ons-input type="text" modifier="underbar" ng-model="search.new_comment"></ons-input>
+    </ons-list-item>
+  </ons-list>
+  <div class="blank-s"></div>
+  <div class="in-center">
+    <ons-button ng-click="search.updateRecord()">記録を更新する</ons-button>
+  </div>
+  </div>
+  </div>
+  <div ng-show="search.isLoading">
+    <ng-include src="'loading.html'"></ng-include>
+  </div>
+  </div>
+</ons-page>
+</ons-template>
+
+<ons-template id="search_settings.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">条件設定</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="searchMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div class="content">
+  <ons-list>
+    <ons-list-header>日付: {{search.date1}} ~ {{search.date2}}</ons-list-header>
+
+    <ons-list-item modifier="chevron" tappable ng-click="search.showChange('date1')">日付1</ons-list-item>
+    <ons-list-item ng-show="search.show['date1']">
+      <ons-input type="date" modifier="underbar" ng-model="search.date1"></ons-input>
+    </ons-list-item>
+
+    <ons-list-item modifier="chevron" tappable ng-click="search.showChange('date2')">日付2</ons-list-item>
+    <ons-list-item ng-show="search.show['date2']">
+      <ons-input type="date" modifier="underbar" ng-model="search.date2"></ons-input>
+    </ons-list-item>
+  </ons-list>
+  
+  <ons-list>
+    <ons-list-header>対戦: {{search.showMatch()}}</ons-list-header>
+    <ons-list-item tappable modifier="chevron" ng-click="search.showChange('player1')">
+      対戦者1
+      <span style="margin-left: 10px">
+        <ons-icon icon="times-circle" style="color: #F40" ng-click="search.player1 = undefined; search.showChange('player1')"></ons-icon>
+      </span>
+    </ons-list-item>
+    <div ng-show="search.show['player1']">
+      <ons-button modifier="quiet" ng-repeat="head in search.kana" style="width:16%" ng-click="search.showP1 = head">{{head}}</ons-button>
+      <div class="blank-s"></div>
+      <div ng-repeat="head in search.kana" ng-show="search.showP1 == head">
+        <ons-list-item tappable ng-repeat="member in search.player_list[head]" ng-if="member.isMember" ng-click="search.show['player1'] = false">
+          <label class="left">
+            <ons-input type="radio" input-id="sp1member-{{member.index}}" value="{{member.name}}" ng-model="search.player1"></ons-input>
+          </label>
+          <label for="sp1member-{{member.index}}" class="center">
+            {{member.name}}
+          </label>
+        </ons-list-item>
+      </div>      
+    </div>
+
+    <ons-list-item tappable modifier="chevron" ng-click="search.showChange('player2')">
+      対戦者2
+      <span style="margin-left: 10px">
+        <ons-icon icon="times-circle" style="color: #F40" ng-click="search.player2 = undefined; search.showChange('player2')"></ons-icon>
+      </span>
+    </ons-list-item>
+    <div ng-show="search.show['player2']">
+      <ons-button modifier="quiet" ng-repeat="head in search.kana" style="width:16%" ng-click="search.showP2 = head">{{head}}</ons-button>
+      <div class="blank-s"></div>
+      <div ng-repeat="head in search.kana" ng-show="search.showP2 == head">
+        <ons-list-item tappable ng-repeat="member in search.player_list[head]" ng-if="member.isMember" ng-click="search.show['player2'] = false">
+          <label class="left">
+            <ons-input type="radio" input-id="sp2member-{{member.index}}" value="{{member.name}}" ng-model="search.player2"></ons-input>
+          </label>
+          <label for="sp2member-{{member.index}}" class="center">
+            {{member.name}}
+          </label>
+        </ons-list-item>
+      </div>      
+    </div>
+
+    <ons-list-item modifier="chevron" tappable ng-click="search.showChange('result')">
+      勝敗
+      <span style="margin-left: 10px">
+        <ons-icon icon="times-circle" style="color: #F40" ng-click="search.result = undefined; search.showChange('result')"></ons-icon>
+      </span>
+    </ons-list-item>
+    <ons-list-item ng-show="search.show['result']">
+      <ons-switch ng-model="search.result"></ons-switch>
+    </ons-list-item>
+  </ons-list>
+
+  <ons-list>
+    <ons-list-header>詳細: {{search.showDetail()}}</ons-list-header>
+    <ons-list-item modifier="chevron" tappable ng-click="search.showChange('type')">
+      試合形式
+    </ons-list-item>
+    <div ng-show="search.show['type']">
+    <ons-list-item ng-repeat="type in search.type_list">
+      <label class="left">
+        <ons-input type="checkbox" input-id="stype-{{$index}}"
+          ng-click="search.selected_type[type.name] = !search.selected_type[type.name]"></ons-input>
+      </label>
+      <label for="stype-{{$index}}" class="center">
+        {{type.name}}
+      </label>
+    </ons-list-item>
+    </div>
+
+    <ons-list-item modifier="chevron" tappable ng-click="search.showChange('detail')">
+      試合結果
+      <span style="margin-left: 10px">
+        <ons-icon icon="times-circle" style="color: #F40" ng-click="search.detail = undefined; search.showChange('detail')"></ons-icon>
+      </span>
+    </ons-list-item>
+    <div ng-show="search.show['detail']">
+    <ons-list-item tappable ng-repeat="detail in search.details" ng-show="((detail != '献上' && detail != '金星') || search.player1)" ng-click="search.show['detail'] = false">
+      <label class="left">
+        <ons-input type="radio" input-id="sdetail-{{$index}}" ng-model="search.detail" value="{{detail}}"></ons-input>
+      </label>
+      <label for="sdetail-{{$index}}" class="center">
+        {{detail}}
+      </label>
+    </ons-list-item>
+    </div>
+
+    <ons-list-item modifier="chevron" tappable ng-click="search.showChange('songer')">
+      読手
+      <span style="margin-left: 10px">
+        <ons-icon icon="times-circle" style="color: #F40" ng-click="search.songer = undefined; search.showChange('songer')"></ons-icon>
+      </span>
+    </ons-list-item>
+    <div ng-show="search.show['songer']">
+    <ons-list-item tappable ng-repeat="songer in search.songer_list" ng-click="search.show['songer'] = false">
+      <label class="left">
+        <ons-input type="radio" input-id="ssonger-{{$index}}" ng-model="search.songer" value="{{songer.name}}"></ons-input>
+      </label>
+      <label for="ssonger-{{$index}}" class="center">
+        {{songer.name}}
+      </label>
+    </ons-list-item>
+    </div>
+
+    <ons-list-item modifier="chevron" tappable ng-click="search.showChange('comment')">
+      コメント
+      <span style="margin-left: 10px">
+        <ons-icon icon="times-circle" style="color: #F40" ng-click="search.comment = undefined; search.showChange('comment')"></ons-icon>
+      </span>
+    </ons-list-item>
+    <ons-list-item ng-show="search.show['comment']">
+      <ons-switch ng-model="search.comment"></ons-switch>
+    </ons-list-item>
+  </ons-list>
+  <div class="blank-s"></div>
+  <div class="in-center">
+    <ons-button ng-click="search.searchRecord()">この条件で検索する</ons-button>
+  </div>
+  </div>
+</ons-page>
+</ons-template>

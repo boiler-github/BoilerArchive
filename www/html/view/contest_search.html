@@ -1,0 +1,186 @@
+<ons-sliding-menu var="csearchMenu" main-page="csearch_settings.html" menu-page="csearch_menu.html"
+  max-slide-distance="200px" side="left" swipeable="true"
+  ng-controller="csearchController as csearch">
+</ons-sliding-menu>
+
+<ons-template id="csearch_menu.html">
+<ons-page>
+  <ons-list>
+    <ons-list-item tappable modifier="chevron" ng-click="csearchMenu.setMainPage('csearch_result.html', {closeMenu: true})">
+      検索結果
+    </ons-list-item>
+    <ons-list-item tappable modifier="chevron" ng-click="csearchMenu.setMainPage('csearch_settings.html', {closeMenu: true})">
+      条件設定
+    </ons-list-item>
+  </ons-list>
+</ons-page>
+</ons-template>
+
+<ons-template id="csearch_result.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">検索結果</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="csearchMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div class="content">
+  <div ng-show="!csearch.isLoading">
+    <h4>{{csearch.count}}件の記録が見つかりました。<span ng-show="csearch.count > 100">（うち100件を表示）</span></h4>
+    <ons-list>
+      <ons-list-header>結果一覧</ons-list-header>
+      <ons-list-item tappable ng-repeat="record in csearch.records"
+        ng-click="csearch.pageDetail(record)">
+        <ons-row>
+          <ons-col>{{record.date}}</ons-col>
+          <ons-col>{{record.name}}</ons-col>
+          <ons-col>参加者: {{record.all}}名</ons-col>
+        </ons-row>
+      </ons-list-item>
+    </ons-list>
+  </div>
+  <div ng-show="csearch.isLoading">
+    <ng-include src="'loading.html'"></ng-include>
+  </div>
+  </div>
+</ons-page>
+</ons-template>
+
+<ons-template id="csearch_detail.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">大会詳細</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="csearchMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div class="content">
+  <div ng-show="!csearch.isLoading">
+    <h3>{{csearch.record.name}}({{csearch.record.date}})</h3>
+    <span class="padding-left">参加者</span>
+    <ons-list ng-repeat="cl in csearch.record.classes">
+      <ons-list-header>{{cl[0]}}級({{cl[2].length}}名 / 全{{cl[1]}}名)</ons-list-header>
+      <ons-list-item>
+        <span ng-repeat="player in cl[2]">{{player}}</span>
+      </ons-list-item>
+    </ons-list>
+    <div ng-repeat="(round, classes) in csearch.games" class="next-row">
+      <span class="padding-left">{{round}}回戦</span>
+      <ons-list ng-repeat="(cl, games) in classes">
+        <ons-list-header>{{cl}}級</ons-list-header>
+        <ons-list-item tappable ng-repeat="game in games" ng-click="csearch.pageEdit(main.admin, game)">
+          <ons-row>
+            <ons-col ng-repeat="data in csearch.arrange(game)" width="{{csearch.widths[$index]}}">
+              {{data}}
+            </ons-col>
+          </ons-row>
+        </ons-list-item>
+      </ons-list>
+    </div>
+  </div>
+  <div ng-show="csearch.isLoading">
+    <ng-include src="'loading.html'"></ng-include>
+  </div>
+  </div>
+</ons-page>
+</ons-template>
+
+<ons-template id="csearch_edit.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">試合編集</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="csearchMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div class="content">
+    <ons-button modifier="quiet" ng-click="csearchMenu.setMainPage('csearch_detail.html')">大会詳細に戻る</ons-button>
+    <div class="blank-s"></div>
+    <ons-list>
+      <ons-list-header>枚数差</ons-list-header>
+      <ons-list-item>
+        <ons-input type="number" class="num-input" modifier="underbar" ng-model="csearch.diff"></ons-input>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>対戦相手</ons-list-header>
+      <ons-list-item>
+        <ons-input type="text" modifier="underbar" ng-model="csearch.opponent"></ons-input>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>所属</ons-list-header>
+      <ons-list-item tappable modifier="chevron" ng-click="csearch.bshow = !csearch.bshow">{{csearch.belong}}</ons-list-item>
+      <div ng-show="csearch.bshow">
+      <ons-button modifier="quiet" ng-repeat="head in csearch.kana" style="width:16%" ng-click="csearch.gshow = head">{{head}}</ons-button>
+      <div ng-repeat="head in csearch.kana" ng-show="csearch.gshow == head">
+        <ons-list-item ng-repeat="group in csearch.group_index[head]">
+          <label class="left">
+            <ons-input type="radio" input-id="csearchgroup-{{group.index}}" value="{{group.name}}" ng-model="csearch.belong"></ons-input>
+          </label>
+          <label for="csearchgroup-{{group.index}}" class="center">
+            {{group.name}}
+          </label>
+        </ons-list-item>
+      </div>
+      </div>
+    </ons-list>
+    <div class="blank-s"></div>
+    <div class="in-center">
+      <ons-button ng-click="csearch.updateRecord()">記録を更新する</ons-button>
+    </div>
+  </div>
+</ons-page>
+</ons-template>
+
+<ons-template id="csearch_settings.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">条件設定</div>
+    <div class="right">
+      <ons-toolbar-button ng-click="csearchMenu.toggleMenu()">
+        <ons-icon icon="ion-navicon" class="menu-icon"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <div class="content">
+  <ons-list>
+    <ons-list-header>日付: {{csearch.date1}} ~ {{csearch.date2}}</ons-list-header>
+
+    <ons-list-item modifier="chevron" tappable ng-click="csearch.showChange('date1')">日付1</ons-list-item>
+    <ons-list-item ng-show="csearch.show['date1']">
+      <ons-input type="date" ng-model="csearch.date1"></ons-input>
+    </ons-list-item>
+
+    <ons-list-item modifier="chevron" tappable ng-click="csearch.showChange('date2')">日付2</ons-list-item>
+    <ons-list-item ng-show="csearch.show['date2']">
+      <ons-input type="date" ng-model="csearch.date2"></ons-input>
+    </ons-list-item>
+  </ons-list>
+
+  <ons-list>
+    <ons-list-header>大会情報: {{csearch.name}}</ons-list-header>
+    <ons-list-item modifier="chevron" tappable ng-click="csearch.showChange('name')">
+      大会名(を含む)
+      <span style="margin-left: 10px">
+        <ons-icon icon="times-circle" style="color: #F40" ng-click="csearch.like = undefined; csearch.showChange('name')"></ons-icon>
+      </span>
+    </ons-list-item>
+    <ons-list-item ng-show="csearch.show['name']">
+      <ons-input type="text" ng-model="csearch.like"></ons-input>
+    </ons-list-item>
+  </ons-list>
+
+  <div class="blank-s"></div>
+  <div class="in-center">
+    <ons-button ng-click="csearch.searchRecord()">この条件で検索する</ons-button>
+  </div>
+  </div>
+</ons-page>
+</ons-template>

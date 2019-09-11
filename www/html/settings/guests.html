@@ -1,0 +1,86 @@
+<ons-template id="guests_index.html">
+  <ons-page ng-controller="guestsController as guests">
+    <ons-toolbar>
+      <div class="left"><ons-back-button>戻る</ons-back-button></div>
+      <div class="center">ゲスト登録</div>
+    </ons-toolbar>
+    <ons-list>
+      <ons-list-header>ゲスト一覧</ons-list-header>
+      <ons-list-item tappable modifier="chevron"
+        ng-repeat="guest in guests.guest_list"
+        ng-click="guests.proceed({data: {name: guest.name, head: guest.head, class: guest.class, belong: guest.belong}})">
+        {{guest.name}}
+      </ons-list-item>
+      <ons-list-item tappable modifier="chevron"
+        ng-click="guests.proceed()">
+        ＋ゲストを追加...
+      </ons-list-item>
+    </ons-list>
+  </ons-page>
+</ons-template>
+
+<ons-template id="guests_detail.html">
+  <ons-page ng-controller="guestdetailController as guestdetail">
+    <ons-toolbar>
+      <div class="left"><ons-back-button>戻る</ons-back-button></div>
+      <div class="center">ゲスト登録</div>
+    </ons-toolbar>
+    <div ng-show="!guestdetail.isLoading">
+    <ons-list>
+      <ons-list-header>名前</ons-list-header>
+      <ons-list-item>
+        <ons-input type="text" modifier="underbar" ng-model="guestdetail.guest.name"></ons-input>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>頭文字（ひらがな）</ons-list-header>
+      <ons-list-item>
+        <div class="head-container">
+          <ons-input type="text" modifier="underbar" ng-model="guestdetail.guest.head"></ons-input>
+        </div>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>級</ons-list-header>
+      <ons-list-item>
+        <div style="margin-left: 10px" ng-repeat="class in guestdetail.classes">
+          <ons-input type="radio" ng-model="guestdetail.guest.class" value="{{class}}" ></ons-input>
+          <label style="margin-left: 5px">{{class}}</label>
+        </div>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>所属</ons-list-header>
+      <ons-button modifier="quiet" ng-repeat="head in guestdetail.kana" style="width:16%" ng-click="guestdetail.show = head">{{head}}</ons-button>
+      <div ng-repeat="head in guestdetail.kana" ng-show="guestdetail.show == head">
+        <ons-list-item ng-repeat="group in guestdetail.group_index[head]">
+          <label class="left">
+            <ons-input type="radio" input-id="guestgroup-{{group.index}}" value="{{group.name}}" ng-model="guestdetail.guest.belong"></ons-input>
+          </label>
+          <label for="guestgroup-{{group.index}}" class="center">
+            {{group.name}}
+          </label>
+        </ons-list-item>
+      </div>
+    </ons-list>
+    <ons-row style="margin-top: 30px">
+      <ons-col class="in-center">
+        <ons-button ng-click="guestdetail.updateGuest()">
+          この情報で登録
+        </ons-button>
+      </ons-col>
+      <ons-col class="in-center"
+        ng-if="guestdetail.register">
+        <ons-button style="background-color: #F40"
+          ng-click="guestdetail.confirmDelete()">
+          削除する
+        </ons-button>
+      </ons-col>
+    </ons-row>
+    <div class="next-row"></div>
+    </div>
+    <div ng-show="guestdetail.isLoading">
+      <ng-include src="'loading.html'"></ng-include>
+    </div>
+  </ons-page>
+</ons-template>

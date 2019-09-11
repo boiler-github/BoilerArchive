@@ -1,0 +1,58 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: https://ssl.gstatic.com; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+  <script src="components/loader.js"></script>
+  <script src="lib/angular/angular.min.js"></script>
+  <script src="lib/onsenui/js/onsenui.min.js"></script>
+  <script src="lib/onsenui/js/angular-onsenui.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.3.4/firebase-firestore.js"></script>
+  <link rel="stylesheet" href="components/loader.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsenui.css">
+  <link rel="stylesheet" href="lib/onsenui/css/onsen-css-components-custom.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <script src="js/global.js"></script>
+  <script src="js/lib.js"></script>
+  <script src="js/main.js"></script>
+  
+  <script src="js/record/record_all.js"></script>
+  <script src="js/record/record_self.js"></script>
+  <script src="js/record/contest_register.js"></script>
+  <script src="js/record/contest_record.js"></script>
+
+  <script src="js/view/result.js"></script>
+  <script src="js/view/search.js"></script>
+  <script src="js/view/contest_result.js"></script>
+  <script src="js/view/contest_search.js"></script>
+
+  <script src="js/settings/songers.js"></script>
+  <script src="js/settings/gametypes.js"></script>
+  <script src="js/settings/groups.js"></script>
+  <script src="js/settings/members.js"></script>
+  <script src="js/settings/guests.js"></script>
+  <script src="js/settings/semester.js"></script>
+  <script src="js/settings/summary.js"></script>
+  
+  <script src="js/account/register.js"></script>
+</head>
+<body ng-controller="mainController as main">
+  <ons-page ng-show="!main.isLoading">
+    <ons-toolbar>
+      <div class="center">{{main.title}}</div>
+    </ons-toolbar>
+    <ons-tabbar position="auto" var="tabbar" ons-reactive="main.resetPage()">
+      <ons-tab page="html/record.html" label="記録する" icon="edit" active></ons-tab>
+      <ons-tab page="html/view.html" label="閲覧する" icon="book"></ons-tab>
+      <ons-tab page="html/settings.html" label="管理する" icon="wrench"></ons-tab>
+      <!-- <ons-tab page="html/account.html" label="アカウント" icon="user"></ons-tab> -->
+    </ons-tabbar>
+  </ons-page>
+  <ons-page ng-show="main.isLoading">
+    <ng-include src="'loading.html'"></ng-include>
+  </ons-page>
+</body>
+</html>

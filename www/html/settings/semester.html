@@ -1,0 +1,60 @@
+<ons-template id="semester_index.html">
+  <ons-page ng-controller="semesterController as semester">
+    <ons-toolbar>
+      <div class="left">
+        <ons-back-button>戻る</ons-back-button>
+      </div>
+      <div class="center">学期末処理</div>
+    </ons-toolbar>
+    <div ng-show="!semester.isLoading">
+    <ons-list>
+      <ons-list-header>次学期開始日</ons-list-header>
+      <ons-list-item>
+        <ons-input type="date" modifier="underbar" ng-model="semester.next"></ons-input>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>学年自動更新(年度末用)</ons-list-header>
+      <ons-list-item>
+        <div class="right">
+          <ons-switch ng-model="semester.doUpdate"></ons-switch>
+        </div>
+      </ons-list-item>
+    </ons-list>
+    <div class="next-row in-center">
+      <ons-button ng-click="semester.proceed()">次へ</ons-button>
+    </div>
+    </div>
+    <div ng-show="semester.isLoading">
+      <ng-include src="'loading.html'"></ng-include>
+    </div>
+  </ons-page>
+</ons-template>
+
+<ons-template id="semester_submit.html">
+  <ons-page ng-controller="semestersubmitController as semestersubmit">
+    <ons-toolbar>
+      <div class="center">更新完了</div>
+    </ons-toolbar>
+    <div class="next-row padding-left">
+      更新が完了しました。<br/>
+    </div>
+    <div class="next-row padding-left" ng-if="semestersubmit.notUpdated.length > 0">
+      以下の部員は更新が完了していません。<br/>
+      手動で更新を行なってください。
+      <ons-list>
+        <ons-list-header>未更新者</ons-list-header>
+        <ons-list-item ng-repeat="member in semestersubmit.notUpdated">
+          <ons-row>
+            <ons-col>{{member.name}}</ons-col>
+            <ons-col class="in-center">{{semestersubmit.showGrade(member.grade)}}</ons-col>
+          </ons-row>
+        </ons-list-item>
+      </ons-list>
+    </div>
+    <div class="next-row in-center">
+      <ons-button ng-click="settingsNavigator.resetToPage('html/settings.html')">戻る</ons-button>
+    </div>
+    <div class="next-row"></div>
+  </ons-page>
+</ons-template>

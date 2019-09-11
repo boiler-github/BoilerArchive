@@ -1,0 +1,14 @@
+<ons-navigator var="viewNavigator" page="view_index.html" animation="slide"></ons-navigator>
+<ons-template id="view_index.html">
+  <ons-page ons-show="main.title = '記録閲覧'">
+    <p style="margin-left:10px">練習記録の閲覧ができます。</p>
+    <ons-list>
+      <ons-list-header>練習記録</ons-list-header>
+      <ons-list-item tappable modifier="chevron" ng-click="viewNavigator.pushPage('html/view/search.html')">記録照会</ons-list-item>
+      <ons-list-item tappable modifier="chevron" ng-click="viewNavigator.pushPage('html/view/result.html')">個人戦績</ons-list-item>
+      <!-- <ons-list-header>大会記録</ons-list-header>
+      <ons-list-item tappable modifier="chevron" ng-click="viewNavigator.pushPage('html/view/contest_search.html')">記録照会</ons-list-item>
+      <ons-list-item tappable modifier="chevron" ng-click="viewNavigator.pushPage('html/view/contest_result.html')">参加記録</ons-list-item> -->
+    </ons-list>
+  </ons-page>
+</ons-template>

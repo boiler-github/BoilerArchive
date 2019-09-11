@@ -1,0 +1,18 @@
+{
+  "name": "superagent",
+  "main": "lib/client.js",
+  "dependencies": {
+    "emitter": "component-emitter#^1.1.2"
+  },
+  "homepage": "https://github.com/visionmedia/superagent",
+  "version": "3.5.1",
+  "_release": "3.5.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v3.5.1",
+    "commit": "abdf7fcef65daa8dbbd856a75b0263ef057da875"
+  },
+  "_source": "https://github.com/visionmedia/superagent.git",
+  "_target": "3.5.1",
+  "_originalSource": "superagent"
+}

@@ -1,0 +1,65 @@
+<ons-template id="songers_index.html">
+  <ons-page ng-controller="songersController as songers">
+    <ons-toolbar>
+      <div class="left"><ons-back-button>戻る</ons-back-button></div>
+      <div class="center">読手登録</div>
+    </ons-toolbar>
+    <ons-list>
+      <ons-list-header>読手一覧</ons-list-header>
+      <ons-list-item tappable modifier="chevron"
+        ng-repeat="songer in songers.songer_list"
+        ng-click="songers.proceed({data: {name: songer.name, id: songer.id}})">
+        {{songer.name}}
+      </ons-list-item>
+      <ons-list-item tappable modifier="chevron"
+        ng-click="songers.proceed()">
+        ＋読手を追加...
+      </ons-list-item>
+    </ons-list>
+  </ons-page>
+</ons-template>
+
+<ons-template id="songers_detail.html">
+  <ons-page ng-controller="songerdetailController as songerdetail">
+    <ons-toolbar>
+      <div class="left"><ons-back-button>戻る</ons-back-button></div>
+      <div class="center">読手登録</div>
+    </ons-toolbar>
+    <div ng-show="!songerdetail.isLoading">
+    <ons-list>
+      <ons-list-header>名前</ons-list-header>
+      <ons-list-item>
+        <ons-input type="text" modifier="underbar" ng-model="songerdetail.songer.name"></ons-input>
+      </ons-list-item>
+    </ons-list>
+    <ons-list>
+      <ons-list-header>表示順</ons-list-header>
+      <ons-list-item>
+        <ons-input type="number" class="num-input" modifier="underbar" ng-model="songerdetail.songer.id"></ons-input>
+        <div style="margin-left: 30px">
+          <ons-button ng-click="songerdetail.addID(1)">＋</ons-button>
+          <ons-button modifier="quiet" ng-click="songerdetail.addID(-1)">－</ons-button>
+        </div>
+      </ons-list-item>
+    </ons-list>
+    <ons-row style="margin-top: 30px">
+      <ons-col class="in-center">
+        <ons-button ng-click="songerdetail.updateSonger()">
+          この情報で登録
+        </ons-button>
+      </ons-col>
+      <ons-col class="in-center"
+        ng-if="songerdetail.register">
+        <ons-button style="background-color: #F40"
+          ng-click="songerdetail.confirmDelete()">
+          削除する
+        </ons-button>
+      </ons-col>
+    </ons-row>
+    <div class="next-row"></div>
+    </div>
+    <div ng-show="songerdetail.isLoading">
+      <ng-include src="'loading.html'"></ng-include>
+    </div>
+  </ons-page>
+</ons-template>

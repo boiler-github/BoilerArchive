@@ -1,0 +1,18 @@
+<ons-template id="summary_index.html">
+  <ons-page ng-controller="summaryController as summary">
+    <ons-toolbar>
+      <div class="left">
+        <ons-back-button>戻る</ons-back-button>
+      </div>
+      <div class="center">学期集計</div>
+    </ons-toolbar>
+    <div ng-show="!summary.isLoading">
+      <div class="in-center" style="margin-top: 40px">
+        集計結果をアップロードしました。
+      </div>
+    </div>
+    <div ng-show="summary.isLoading">
+      <ng-include src="'loading.html'"></ng-include>
+    </div>
+  </ons-page>
+</ons-template>

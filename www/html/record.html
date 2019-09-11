@@ -1,0 +1,22 @@
+<ons-navigator var="editNavigator" page="record_index.html" animation="slide"></ons-navigator>
+<ons-template id="record_index.html">
+  <ons-page ons-show="main.title = '記録入力'">
+    <p style="margin-left:10px">記録の入力を行います。</p>
+    <ons-list>
+      <ons-list-header>練習記録</ons-list-header>
+      <ons-list-item tappable modifier="chevron" ng-click="editNavigator.pushPage('env_all.html')">一括入力</ons-list-item>
+      <ons-list-item tappable modifier="chevron" ng-click="editNavigator.pushPage('env_self.html')">個別入力</ons-list-item>
+      <!-- <ons-list-header>大会記録</ons-list-header>
+      <ons-list-item tappable modifier="chevron" ng-click="editNavigator.pushPage('cregister_index.html')">情報登録</ons-list-item>
+      <ons-list-item tappable modifier="chevron"
+        ng-repeat="contest in main.contest_list"
+        ng-click="editNavigator.pushPage('html/record/contest_record.html', {data: contest})">
+        {{contest.name}}
+      </ons-list-item> -->
+    </ons-list>
+  </ons-page>
+</ons-template>
+
+<ng-include src="'html/record/record_all.html'"></ng-include>
+<ng-include src="'html/record/record_self.html'"></ng-include>
+<ng-include src="'html/record/contest_register.html'"></ng-include>

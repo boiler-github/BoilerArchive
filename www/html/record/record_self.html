@@ -1,0 +1,294 @@
+<ons-template id="env_self.html">
+<ons-page ng-controller="senvController as senv">
+  <ons-toolbar>
+    <div class="left"><ons-back-button>戻る</ons-back-button></div>
+    <div class="center">練習入力：設定</div>
+    <div class="right" style="padding-top: 3px">
+      <ons-toolbar-button ng-click="senv.proceed()">
+        <ons-icon icon="angle-double-right" size="150%"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <ons-gesture-detector
+    ng-swiperight="editNavigator.popPage()"
+    ng-swipeleft="senv.proceed()">
+  <div class="content">
+  <ons-list>
+    <ons-list-header>日付</ons-list-header>
+    <ons-list-item>
+      <ons-input type="date" modifier="underbar" ng-model="senv.date"></ons-input>
+    </ons-list-item>
+    <ons-list-header>試合数</ons-list-header>
+    <ons-list-item>
+      <ons-input type="number" class="num-input" modifier="underbar" ng-model="senv.round" min="1"></ons-input>
+      試合目
+      <div style="margin-left: 30px">
+        <ons-button ng-click="senv.addRound(1)">＋</ons-button>
+        <ons-button modifier="quiet" ng-click="senv.addRound(-1)">－</ons-button>
+      </div>
+    </ons-list-item>
+    <ons-list-header>読手</ons-list-header>
+    <ons-list-item tappable modifier="chevron" ng-click="senv.sshow = !senv.sshow">{{senv.songer}}</ons-list-item>
+    <div ng-show="senv.sshow">
+    <ons-list-item tappable ng-repeat="songer in senv.songer_list" ng-click="senv.sshow = false">
+      <label class="left">
+        <ons-input type="radio" input-id="ssonger-{{$index}}" ng-model="senv.songer" value="{{songer.name}}"></ons-input>
+      </label>
+      <label for="ssonger-{{$index}}" class="center">
+        {{songer.name}}
+      </label>
+    </ons-list-item>
+    </div>
+  </ons-list>
+  </div>
+  </ons-gesture-detector>
+</ons-page>
+</ons-template>
+
+<ons-template id="player_self.html">
+<ons-page ng-controller="splayerController as splayer">
+  <ons-toolbar>
+    <div class="left"><ons-back-button>戻る</ons-back-button></div>
+    <div class="center">練習入力：対戦者選択</div>
+    <div class="right" style="padding-top: 3px">
+      <ons-toolbar-button ng-click="splayer.proceed()">
+        <ons-icon icon="angle-double-right" size="150%"></ons-icon>
+      </ons-toolbar-button>
+    </div>
+  </ons-toolbar>
+  <ons-gesture-detector
+    ng-swiperight="editNavigator.popPage()"
+    ng-swipeleft="splayer.proceed()">
+  <div class="content">
+  <ons-list>
+    <ons-list-header>一人取り</ons-list-header>
+    <ons-list-item>
+      <label class="left">
+        <ons-input type="radio" input-id="ssingle" ng-model="splayer.opponent_name" value="一人取り"></ons-input>
+      </label>
+      <label for="ssingle" class="center">
+        一人取り
+      </label>
+    </ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>対戦者一覧</ons-list-header>
+    <ons-button modifier="quiet" ng-repeat="head in splayer.kana" style="width:16%" ng-click="splayer.show = head">{{head}}</ons-button>
+    <ons-button modifier="quiet" ng-click="splayer.show = '+'">追加...</ons-button>
+    <div ng-repeat="head in splayer.kana" ng-show="splayer.show == head">
+      <ons-list-item ng-repeat="member in splayer.player_list[head]"
+        ng-if="member.name != splayer.env.songer && member.name != splayer.player">
+        <label class="left">
+          <ons-input type="radio" input-id="smember-{{member.index}}" ng-model="splayer.opponent_name" value="{{member.name}}" ng-click="splayer.opponent = member"></ons-input>
+        </label>
+        <label for="smember-{{member.index}}" class="center">
+          {{member.name}}
+        </label>
+      </ons-list-item>
+    </div>
+    <div ng-show="splayer.show == '+'">
+      <ons-list-item ng-repeat="guest in splayer.registered">
+        <label class="left">
+          <ons-input type="radio" input-id="sguest-{{$index}}" ng-model="splayer.opponent" value="{{member.name}}"></ons-input>
+        </label>
+        <label for="sguest-{{$index}}" class="center">
+          {{guest.name}}
+        </label>
+      </ons-list-item>
+      <ons-list-item>
+        名前：<ons-input type="text" modifier="underbar" ng-model="splayer.guest.name"></ons-input>
+      </ons-list-item>
+      <ons-list-item>
+        頭文字（ひらがな）：<div class="head-container"><ons-input type="text" modifier="underbar" ng-model="splayer.guest.head"></ons-input></div>
+      </ons-list-item>
+      <ons-list-item>
+        級：
+        <div style="margin-left: 10px" ng-repeat="class in splayer.classes">
+          <ons-input type="radio" ng-model="splayer.guest.class" value="{{class}}" ></ons-input>
+          <label style="margin-left: 5px">{{class}}</label>
+        </div>
+      </ons-list-item>
+      <ons-list-item>
+        所属：
+      </ons-list-item>
+      <ons-button modifier="quiet" ng-repeat="head in splayer.kana" style="width:16%" ng-click="splayer.gshow = head">{{head}}</ons-button>
+      <div ng-repeat="head in splayer.kana" ng-show="splayer.gshow == head">
+        <ons-list-item ng-repeat="group in splayer.group_index[head]">
+          <label class="left">
+            <ons-input type="radio" input-id="splayergroup-{{group.index}}" value="{{group.name}}" ng-model="splayer.guest.belong"></ons-input>
+          </label>
+          <label for="splayergroup-{{group.index}}" class="center">
+            {{group.name}}
+          </label>
+        </ons-list-item>
+      </div>
+      <ons-list-item>
+        <div class="center">
+          <ons-button ng-click="splayer.registerGuest()">登録</ons-button>
+        </div>
+      </ons-list-item>
+    </div>
+  </ons-list>
+  </div>
+  </ons-gesture-detector>
+</ons-page>
+</ons-template>
+
+<ons-template id="single_self.html">
+<ons-page ng-controller="ssingleController as ssingle">
+  <ons-toolbar>
+    <div class="left"><ons-back-button>戻る</ons-back-button></div>
+    <div class="center">練習入力：結果</div>
+  </ons-toolbar>
+  <ons-gesture-detector
+    ng-swiperight="editNavigator.popPage()">
+  <div class="content">
+  <ons-list>
+    <ons-list-header>一人取り</ons-list-header>
+    <ons-list-item>
+      コメント：
+      <ons-input type="text" ng-model="ssingle.comment"></ons-input>
+    </ons-list-item>
+  </ons-list>
+  <div class="in-center" style="margin-top: 20px">
+    <ons-button ng-click="ssingle.sendData()">
+    送信する
+    </ons-button>
+  </div>
+  </div>
+  </ons-gesture-detector>
+</ons-page>
+</ons-template>
+
+<ons-template id="submit_single.html">
+<ons-page>
+  <ons-toolbar>
+    <div class="center">送信完了</div>
+  </ons-toolbar>
+  <div class="content">
+  <p>記録を送信しました。</p>
+  <div class="in-center">
+    <ons-button ng-click="editNavigator.resetToPage('html/record.html')">戻る</ons-button>
+  </div>
+  </div>
+</ons-page>
+</ons-template>
+
+<ons-template id="result_self.html">
+<ons-page ng-controller="sresultController as sresult">
+  <ons-toolbar>
+    <div class="left"><ons-back-button>戻る</ons-back-button></div>
+    <div class="center">練習入力：結果</div>
+  </ons-toolbar>
+  <ons-gesture-detector
+    ng-swiperight="editNavigator.popPage()">
+  <div class="content">
+  <ons-list>
+    <ons-list-header>{{sresult.player.name}} － {{sresult.opponent.name}}</ons-list-header>
+    <ons-list-item>
+      <div class="center">
+        勝敗：{{sresult.result ? "× ○" : "○ ×"}}
+      </div>
+      <div class="right">
+        <ons-switch ng-model="sresult.result"></ons-switch>
+      </div>
+    </ons-list-item>
+    <ons-list-item>
+      枚数差：<ons-input type="number" modifier="underbar" ng-model="sresult.diff" min="1" max="50" style="width:35px"></ons-input>
+      <div style="margin-left: 30px">
+        <ons-button ng-click="sresult.addDiff(1)">＋</ons-button>
+        <ons-button modifier="quiet" ng-click="sresult.addDiff(-1)">－</ons-button>
+      </div>
+    </ons-list-item>
+    <ons-list-item>
+      試合形式：
+      <div style="margin-left: 10px" ng-repeat="type in sresult.type_list">
+        <ons-input type="radio" ng-model="sresult.type" value="{{$index}}"></ons-input>
+        <label style="margin-left: 5px">{{type.name}}</label>
+      </div>
+    </ons-list-item>
+    <ons-list-item>
+      コメント：
+      <ons-input type="text" ng-model="sresult.comment"></ons-input>
+    </ons-list-item>
+  </ons-list>
+  <div class="in-center" style="margin-top: 20px">
+    <ons-button ng-click="sresult.sendData()">
+    送信する
+    </ons-button>
+  </div>
+  </div>
+  </ons-gesture-detector>
+</ons-page>
+</ons-template>
+
+<ons-template id="submit_self.html">
+<ons-page ng-controller="ssubmitController as ssubmit">
+  <ons-toolbar>
+    <div class="center">送信完了</div>
+  </ons-toolbar>
+  <div class="content">
+  <h4>通算</h4>
+  <ons-list>
+    <ons-list-header>連勝数</ons-list-header>
+    <ons-list-item>
+      <ons-row>
+        <ons-col>{{ssubmit.combo}}</ons-col>
+        <ons-col width="10%">→</ons-col>
+        <ons-col>{{ssubmit.new_combo}}</ons-col>
+        <ons-col width="60%"></ons-col>
+      </ons-row>
+    </ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>レーティング</ons-list-header>
+    <ons-list-item>
+      <ons-row>
+        <ons-col>{{ssubmit.old_rating}}</ons-col>
+        <ons-col width="10%">→</ons-col>
+        <ons-col>{{ssubmit.new_rating}}</ons-col>
+        <ons-col width="60%" class="in-left">({{(ssubmit.result ? "+" : "-") + ssubmit.r_change}})</ons-col>
+      </ons-row>
+    </ons-list-item>
+  </ons-list>
+  <h4>個別戦績 (vs {{ssubmit.opponent}})</h4>
+  <ons-list>
+    <ons-list-header>試合数</ons-list-header>
+    <ons-list-item>
+      <ons-row>
+        <ons-col>{{ssubmit.e_total}}</ons-col>
+        <ons-col width="10%">→</ons-col>
+        <ons-col>{{ssubmit.e_total + 1}}</ons-col>
+        <ons-col width="60%"></ons-col>
+      </ons-row>
+    </ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>個別勝数</ons-list-header>
+    <ons-list-item>
+      <ons-row>
+        <ons-col>{{ssubmit.e_win}}</ons-col>
+        <ons-col width="10%">→</ons-col>
+        <ons-col>{{ssubmit.e_win + ssubmit.result}}</ons-col>
+        <ons-col width="60%"></ons-col>
+      </ons-row>
+    </ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>個別連勝数</ons-list-header>
+    <ons-list-item>
+      {{ssubmit.e_combo > 10 ? "10連勝以上" : ssubmit.e_combo + "連勝中"}}<ons-col>
+    </ons-list-item>
+  </ons-list>
+  <ons-list>
+    <ons-list-header>10戦戦績</ons-list-header>
+    <ons-list-item>
+      {{ssubmit.recent}}
+    </ons-list-item>
+  </ons-list>
+  <div class="in-center" style="margin-top: 20px">
+    <ons-button ng-click="editNavigator.resetToPage('html/record.html', {animation: 'fade'})">戻る</ons-button>
+  </div>
+  </div>
+</ons-page>
+</ons-template>
