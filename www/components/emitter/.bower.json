@@ -1,0 +1,30 @@
+{
+  "name": "emitter",
+  "description": "Event emitter",
+  "keywords": [
+    "emitter",
+    "events"
+  ],
+  "version": "1.1.2",
+  "license": "MIT",
+  "main": "index.js",
+  "homepage": "https://github.com/component/emitter",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "Makefile",
+    "package.json",
+    "component.json"
+  ],
+  "_release": "1.1.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "1.1.2",
+    "commit": "efc60f2e93cb0f11479467e216fb21247568e6b8"
+  },
+  "_source": "https://github.com/sjlu/component-emitter.git",
+  "_target": "^1.1.2",
+  "_originalSource": "component-emitter"
+}
