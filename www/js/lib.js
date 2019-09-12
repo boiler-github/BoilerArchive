@@ -58,38 +58,51 @@ function updateGuest(name, update){
           });
 }
 
-function updateSonger(name, update){
-  return Songer.equalTo("name", name)
-          .fetch()
-          .then(function(songer){
-            return update(songer);
-          })
-          .then(makeSongerList);
+function insertSonger(songer) {
+	var docRef;
+	if(songer.id) docRef = db.collection('Songers').doc(songer.id);
+	else docRef = db.collection('Songers').doc();
+
+	return docRef.set({
+    	name: songer.name,
+  	}).then(makeSongerList);
+}
+
+function deleteSonger(songer) {
+  	return db.collection('Songers').doc(songer.id).delete()
+    	.then(makeSongerList);
 }
 
 function insertGroup(group) {
-  var docRef;
-  if(group.id) docRef = db.collection('groups').doc(group.id);
-  else docRef = db.collection('groups').doc();
+  	var docRef;
+ 	if(group.id) docRef = db.collection('Groups').doc(group.id);
+  	else docRef = db.collection('Groups').doc();
 
-  return docRef.set({
-    name: group.name,
-    head: group.head,
-  }).then(makeGroupList);
+  	return docRef.set({
+    	name: group.name,
+    	head: group.head,
+  	}).then(makeGroupList);
 }
 
 function deleteGroup(group) {
-  return db.collection('groups').doc(group.id).delete()
-    .then(makeGroupList);
+  	return db.collection('Groups').doc(group.id).delete()
+    	.then(makeGroupList);
 }
 
-function updateType(name, update){
-  return GameType.equalTo("name", name)
-          .fetch()
-          .then(function(type){
-            return update(type);
-          })
-          .then(makeTypeList);
+function insertGameType(gameType) {
+  	var docRef;
+  	if(gameType.id) docRef = db.collection('GameTypes').doc(gameType.id);
+  	else docRef = db.collection('GameTypes').doc();
+
+  	return docRef.set({
+    	name: gameType.name,
+		isRegular: gameType.isRegular,
+  	}).then(makeGameTypeList);
+}
+
+function deleteGameType(gameType) {
+	return db.collection('GameTypes').doc(gameType.id).delete()
+    	.then(makeGameTypeList);
 }
 
 function updateContestInfo(name, update){
