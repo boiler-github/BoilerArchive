@@ -1,1 +1,8 @@
-#
+node_modules
+package-lock.json
+package.backup.json
+platforms/
+res/
+www/components/
+www/lib/
+config.xml
