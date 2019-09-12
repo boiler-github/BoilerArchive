@@ -1,12 +1,12 @@
-var module = ons.bootstrap();
+const module = ons.bootstrap();
 firebase.initializeApp({
   apiKey: 'AIzaSyCnVNTuF4IUPiER0luEX2uknXzy7GRrFQ4',
   authDomain: 'boilerarchive-31164.firebaseapp.com',
   projectId: 'boilerarchive-31164'
 });
-var db = firebase.firestore();
-var classes = ["A", "B3", "B", "C", "D"];
-var kana = ["あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ", "他"];
+const db = firebase.firestore();
+const classes = ["A", "B3", "B", "C", "D"];
+const kana = ["あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ", "他"];
 
 //各種リスト作成
 function makePlayerList(){
@@ -87,58 +87,62 @@ function makeGuestList(){
 }
 
 function makeSongerList(){
-  songer_list = [];
-  // return Songer.order("id", false)
-  //         .fetchAll()
-  //         .then(function(songers){
-  //           songers.forEach(function(songer){
-  //             songer_list.push({
-  //               name: songer.name,
-  //               id: songer.id,
-  //               count: songer.count,
-  //             });
-  //           });
-  //         });
+	songerList = [];
+	
+	return db.collection('Songers').get()
+    	.then(function(docs) {
+      		docs.forEach(function(doc) {
+        		const songer = doc.data();
+
+				songerList.push({
+					id: doc.id,
+					name: songer.name,
+				});
+      		});
+    	});
 }
 
 function makeGroupList(){
-  group_list = [];
-  group_index = {};
+	groupList = [];
+	groupIndex = {};
   
-  return db.collection('groups').get()
-    .then(function(docs) {
-      docs.forEach(function(doc) {
-        var group = doc.data();
+	return db.collection('Groups').get()
+    	.then(function(docs) {
+      		docs.forEach(function(doc) {
+        		const group = doc.data();
+        		const head = getRow(group.head);
 
-        group_list.push({
-          id: doc.id,
-          name: group.name,
-          head: group.head,
-        });
-        var head = getRow(group.head);
-        if(!group_index[head]) group_index[head] = [];
-        group_index[head].push({
-          id: doc.id,
-          name: group.name,
-          head: group.head,
-        });
-      });
-    });
+				groupList.push({
+					id: doc.id,
+					name: group.name,
+					head: head,
+				});
+
+        		if(!groupIndex[head]) groupIndex[head] = [];
+        		groupIndex[head].push({
+					id: doc.id,
+					name: group.name,
+					head: head,
+		        });
+      		});
+    	});
 }
 
-function makeTypeList(){
-  type_list = [];
-  // return GameType.order("id", false)
-  //         .fetchAll()
-  //         .then(function(types){
-  //           types.forEach(function(type){
-  //             type_list.push({
-  //               name: type.name,
-  //               id: type.id,
-  //               isRegular: type.isRegular,
-  //             });
-  //           });
-  //         });
+function makeGameTypeList(){
+	gameTypeList = [];
+	
+	return db.collection('GameTypes').get()
+    	.then(function(docs) {
+      		docs.forEach(function(doc) {
+        		const gameType = doc.data();
+
+				gameTypeList.push({
+					id: doc.id,
+					name: gameType.name,
+					isRegular: gameType.isRegular,
+				});
+      		});
+    	});
 }
 
 function makeContestList(){
@@ -158,17 +162,17 @@ function makeContestList(){
   //         });
 }
 
-var songer_list = [];
+var songerList = [];
 makeSongerList();
 
 var player_list = {};
 makePlayerList();
 
-var type_list = [];
-makeTypeList();
+var gamTypeList = [];
+makeGameTypeList();
 
-var group_list = [];
-var group_index = [];
+var groupList = [];
+var groupIndex = [];
 makeGroupList();
 
 var member_list = [];
